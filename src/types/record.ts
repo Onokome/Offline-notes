@@ -5,4 +5,5 @@ export type RecordItem = {
   category: "personal" | "work" | "other"
   createdAt: number
   synced: boolean
+  lastSyncedAt?: number 
 }

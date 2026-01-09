@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { type RecordItem } from "../types/record"
-import { saveRecord, getRecords } from "../storage/recordStorage"
 import { v4 as uuidv4 } from "uuid"
+import { saveRecord } from "../storage/recordDB"
 
 interface Props {
   setRecords: React.Dispatch<React.SetStateAction<RecordItem[]>>
@@ -12,7 +12,7 @@ export default function CreateRecord({ setRecords }: Props) {
   const [description, setDescription] = useState("")
   const [category, setCategory] = useState<RecordItem["category"]>("personal")
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
 
     if (!title.trim() || !description.trim()) return
@@ -26,8 +26,17 @@ export default function CreateRecord({ setRecords }: Props) {
       synced: false,
     }
 
-    saveRecord(newRecord)
-    setRecords(getRecords()) // <-- LIVE update
+    setRecords(prev => [newRecord, ...prev])
+
+    try {
+    await saveRecord(newRecord)
+  } catch (err) {
+    console.error("Failed to save record", err)
+
+
+    setRecords(prev => prev.filter(r => r.id !== newRecord.id))
+  }
+
 
     // Reset form
     setTitle("")
