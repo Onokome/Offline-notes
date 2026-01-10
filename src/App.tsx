@@ -49,16 +49,38 @@ function App() {
   }, [online, records]);
 
   // Filter records based on searchText and category
-  const filteredRecords = records.filter((record) => {
-    const matchesText =
-      record.title.toLowerCase().includes(searchText.toLowerCase()) ||
-      record.description.toLowerCase().includes(searchText.toLowerCase());
+  const filteredRecords = records
+    .filter((r) => r.status === "active")
+    .filter((record) => {
+      const matchesText =
+        record.title.toLowerCase().includes(searchText.toLowerCase()) ||
+        record.description.toLowerCase().includes(searchText.toLowerCase());
 
-    const matchesCategory =
-      categoryFilter === "all" || record.category === categoryFilter;
+      const matchesCategory =
+        categoryFilter === "all" || record.category === categoryFilter;
 
-    return matchesText && matchesCategory;
-  });
+      return matchesText && matchesCategory;
+    });
+
+//     async function handleDelete(id: string) {
+//   setRecords(prev =>
+//     prev.map(r =>
+//       r.id === id
+//         ? { ...r, status: "deleted", synced: false }
+//         : r
+//     )
+//   )
+
+//   // Persist offline
+//   await markRecordAsDeleted(id)
+// }
+
+function handleUpdate(updated: RecordItem) {
+  setRecords(prev =>
+    prev.map(r => (r.id === updated.id ? updated : r))
+  )
+}
+
 
   return (
     <>
@@ -111,7 +133,7 @@ function App() {
           </div>
 
           {/* Record List */}
-          <RecordList records={filteredRecords} />
+          <RecordList records={filteredRecords} onUpdate={handleUpdate}/>
         </div>
       </div>
     </>

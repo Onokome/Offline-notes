@@ -37,3 +37,29 @@ export async function markRecordsAsSynced(ids: string[]) {
 
   await tx.done
 }
+
+
+export async function markRecordAsDeleted(id: string) {
+  const db = await dbPromise
+  const record = await db.get(RECORD_STORE, id)
+  if (!record) return
+
+  record.status = "deleted"
+  record.synced = false
+  record.updatedAt = Date.now()
+
+  await db.put(RECORD_STORE, record)
+}
+
+
+export async function updateRecord(record: RecordItem) {
+  const db = await dbPromise
+
+  const updatedRecord = {
+    ...record,
+    updatedAt: Date.now(),
+    synced: false,
+  }
+
+  await db.put(RECORD_STORE, updatedRecord)
+}

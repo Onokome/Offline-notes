@@ -24,6 +24,7 @@ export default function CreateRecord({ setRecords }: Props) {
       category,
       createdAt: Date.now(),
       synced: false,
+      status: "active"
     }
 
     setRecords(prev => [newRecord, ...prev])
